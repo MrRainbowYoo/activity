@@ -1,0 +1,125 @@
+<template>
+    <div class="problem-wrap">
+        <h2 class="problem-title">1. 两数之和</h2>
+        <div class="problem-desc">
+            <p class="descText" v-for="(item,index) in desc" :key="index">{{item}}</p>
+        </div>
+        <div class="problem-demo" v-for="item in demo" :key="item.id">
+            <p class="bold">示例 {{item.id+1}}:</p>
+            <div class="demo-content">
+                <p>
+                    <span class="bold">输入：</span><code>{{item.input}}</code>
+                </p>
+                <p>
+                    <span class="bold">输出：</span><code>{{item.output}}</code>
+                </p>                
+            </div>
+        </div>
+        <div class="problem-input">
+            <p class="bold">输入用例</p>
+            <p class="tip">
+                注：用户可在本地IDE编写代码，提交的时候，将下方测试输入用例的『输出与代码』分别填充至右侧。
+            </p>
+
+            <div class="input-content">
+                <code v-for="(item, index) in inputContent" :key="index">{{item}}</code>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            desc: ['给定一个整数数组nums和一个整数目标值target, 请你在该数组中找出和为目标值 target的那两个整数，并返回它们的数组下标。',
+                '你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。',
+                '你可以按任意顺序返回答案。'],
+            demo: [
+                {id: 0, input: 'nums = [2, 7, 11, 15], target = 9', output: '[0, 1]'},
+                {id: 1, input: 'nums = [3, 2, 4], target = 6', output: '[1, 2]'},
+                {id: 2, input: 'nums = [3, 3], target = 6', output: '[0, 1]'},                
+            ],
+            inputContent: ['[2, 7, 11, 15], 9',
+                        '[3, 2, 4], 6',
+                        '[3, 3], 6',
+]
+        }
+    }
+};
+</script>
+
+<style lang="less">
+    @fontSize: 13px;
+    @gap: 10px;
+    @border: 1px solid rgb(240, 240, 240);
+
+    .problem-wrap {
+        font-size: @fontSize;
+        padding: 10px;
+        margin-right: 10px;
+        border: @border;
+        display: flex;
+        flex-direction: column;
+
+        .bold {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .problem-title {
+            padding: 10px 0;
+            border-bottom: @border;
+        }
+
+        .problem-desc {
+            .descText {
+                margin: @gap 0;
+            }
+        }
+
+        .problem-demo {
+            margin: @gap 0;
+            
+            .demo-content {
+                background-color: rgb(242, 243, 244);
+                padding: 5px 0 5px 10px;
+
+                p {
+                    margin: @gap;
+                }
+            }
+        }
+
+        .problem-input {
+            border-top: @border;
+            margin-top: @gap;
+            padding-top: @gap;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+
+            .tip {
+                color: #2980b9;
+                font-size: 12px;
+                margin: @gap 0;
+            }
+
+            .input-content {
+                width: 100%;
+                border: @border;
+                flex: 1;
+                max-height: 200px;
+                padding: 5px;
+                box-sizing: border-box;
+                font-size: 14px;
+                overflow: auto;
+
+                code {
+                    display: block;
+                    margin-bottom: 5px;
+                }
+            }
+        }
+    }
+</style>
