@@ -1,6 +1,6 @@
 <template>
     <div class="problem-wrap">
-        <h2 class="problem-title">1. 两数之和</h2>
+        <h2 class="problem-title">{{questionId+1}}. {{title}}</h2>
         <div class="problem-desc">
             <p class="descText" v-for="(item,index) in desc" :key="index">{{item}}</p>
         </div>
@@ -19,6 +19,7 @@
             <p class="bold">输入用例</p>
             <p class="tip">
                 注：用户可在本地IDE编写代码，提交的时候，将下方测试输入用例的『输出与代码』分别填充至右侧。
+                输出结果记得换行。
             </p>
 
             <div class="input-content">
@@ -29,21 +30,42 @@
 </template>
 
 <script>
+import eventBus from "../utils/eventBus.js"
+
 export default {
     data() {
         return {
-            desc: ['给定一个整数数组nums和一个整数目标值target, 请你在该数组中找出和为目标值 target的那两个整数，并返回它们的数组下标。',
-                '你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。',
-                '你可以按任意顺序返回答案。'],
-            demo: [
-                {id: 0, input: 'nums = [2, 7, 11, 15], target = 9', output: '[0, 1]'},
-                {id: 1, input: 'nums = [3, 2, 4], target = 6', output: '[1, 2]'},
-                {id: 2, input: 'nums = [3, 3], target = 6', output: '[0, 1]'},                
-            ],
-            inputContent: ['[2, 7, 11, 15], 9',
-                        '[3, 2, 4], 6',
-                        '[3, 3], 6',
-]
+            questionSet: require("../questionSet.json").questions,
+            questionId: 0,
+            title: null,
+            desc: null,
+            demo: null, 
+            inputContent: null
+        }
+    },
+    created() {
+        this.initProblem()
+        eventBus.$on('changeQuestion', () => {
+            let nowId = this.questionId
+            let length = this.questionSet.length
+            this.questionId = (nowId + 1) % length
+        })
+    },
+    watch: {
+        questionId() {
+            this.initProblem()
+            this.$parent.$children[1].questionId = this.questionId
+        }
+    },
+    methods: {
+        initProblem() {
+            let nowQuestion = this.questionSet[this.questionId]
+
+            this.questionId = nowQuestion.questionId
+            this.title = nowQuestion.title
+            this.desc = nowQuestion.desc
+            this.demo = nowQuestion.demo
+            this.inputContent = nowQuestion.inputContent
         }
     }
 };
@@ -109,7 +131,7 @@ export default {
                 width: 100%;
                 border: @border;
                 flex: 1;
-                max-height: 200px;
+                // max-height: 200px;
                 padding: 5px;
                 box-sizing: border-box;
                 font-size: 14px;

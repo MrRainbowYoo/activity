@@ -1,5 +1,5 @@
 <template>
-    <div id="monaco-editor-box">
+    <div id="monaco-editor-box" v-loading.fullscreen.lock="fullscreenLoading">
         <div class="editor-btns">
             <el-select v-model="currentLanguage" placeholder="请选择编程语言" size="mini">
                 <el-option
@@ -17,7 +17,7 @@
 
         <div class="output-wrap">
             <p class="bold">输出结果</p>
-            <div class="output-content" contenteditable="true"></div>
+            <div class="output-content" contenteditable="true" ref="output"></div>
         </div>
     </div>
 </template>
@@ -25,6 +25,8 @@
 <script>
 // import * as monaco from "monaco-editor/esm/vs/editor/editor.main";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
+import eventBus from "../utils/eventBus";
+import axios from "axios"
 
 export default {
     name: "MonacoEditor",
@@ -53,17 +55,12 @@ export default {
                 };
             },
         },
-        codes: {
-            type: String,
-            default: function () {
-                return "";
-            },
-        },
     },
     data() {
         return {
             editor: null, //文本编辑器
             codeValue: "// 把写好的代码粘贴到这里哦", //保存后的文本
+            codeCopy: '',
 
             options: [
                 {
@@ -90,21 +87,11 @@ export default {
             ],
             currentLanguage: "JavaScript",
             languageType: "javascript",
+            fullscreenLoading: false,
+            questionId: 0
         };
     },
     watch: {
-        codes: function (newValue) {
-            console.debug("Code editor: content change");
-            if (this.editor) {
-                if (newValue !== this.editor.getValue()) {
-                    this.editor.setValue(newValue);
-                    this.editor.trigger(
-                        this.editor.getValue(),
-                        "editor.action.formatDocument"
-                    );
-                }
-            }
-        },
         currentLanguage(val) {
             this.destroyEditor(); 
             this.languageType = val;
@@ -124,8 +111,29 @@ export default {
     mounted() {
         this.initEditor();
     },
+    created() {
+        eventBus.$on('changeQuestion', () => {
+          this.destroyEditor(); 
+          this.initEditor();
+        })
+
+        eventBus.$on('submit', () => {
+            let codeValue = this.codeCopy;
+            let outputValue = this.$refs.output.innerText;
+            if (this.isValid(codeValue.trim()) && this.isValid(outputValue.trim())) {
+              console.log('开始提交代码');
+              this.submitCodes()
+            } else {
+                alert('请提交代码与输出结果')
+            }          
+        })
+    },
     methods: {
         initEditor() {
+            // 清除编辑器内容与输出结果内容
+            this.codeCopy = ""
+            this.$refs.output.innerText = ""
+
             const self = this;
             // 初始化编辑器，确保dom已经渲染
             this.editor = monaco.editor.create(self.$refs.monacoEditor, {
@@ -148,7 +156,7 @@ export default {
             // self.$emit("onMounted", self.editor); //编辑器创建完成回调
             self.editor.onDidChangeModelContent(function (event) {
                 //编辑器内容changge事件
-                self.codesCopy = self.editor.getValue();
+                self.codeCopy = self.editor.getValue();
                 self.$emit("onCodeChange", self.editor.getValue(), event);
             });
         },
@@ -156,6 +164,39 @@ export default {
             // 销毁编辑器
             this.editor.dispose();
         },
+        isValid(str) {
+            if (str.replace(/\\s+/g, "") == "")
+                return false;
+            else
+                return true;
+        },
+        submitCodes() {
+          const URL = 'http://localhost:3003/submit'
+          const BODY = {
+            questionId: this.questionId,
+            codeContent: this.codeCopy,
+            output: this.$refs.output.innerText
+          }
+          const CONFIG = {
+            timeout: 3000
+          }
+
+          this.fullscreenLoading = true;
+
+          axios.post(URL, BODY, CONFIG).then(res => {
+            console.log(res.data);
+            let isPass = res.data.code
+            if(isPass) {
+              alert('恭喜你！回答正确！')
+            } else {
+              alert('抱歉，回答错误。')
+            }
+          }).catch(reason => {
+            console.log(reason)
+          }).finally(() => {
+            this.fullscreenLoading = false;
+          })
+        }
     },
 };
 </script>
@@ -196,9 +237,6 @@ export default {
       padding: 10px;
       position: relative;
       
-
-
-      
       .output-content {
         width: 100%;
         height: 160px;
@@ -223,7 +261,7 @@ export default {
 #monaco-editor {
     width: 100%;
     flex: 1;
-    // height: 65vh;
+    min-height: 30vh;
 }
 </style>
 
