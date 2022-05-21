@@ -187,7 +187,8 @@ export default {
             console.log(res.data);
             let isPass = res.data.code
             if(isPass) {
-              alert('恭喜你！回答正确！')
+              // alert('恭喜你！回答正确！')
+              this.showResource()
             } else {
               alert('抱歉，回答错误。')
             }
@@ -196,7 +197,17 @@ export default {
           }).finally(() => {
             this.fullscreenLoading = false;
           })
-        }
+        },
+      showResource() {
+        this.$alert('这是资源地址', '回答正确', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.$message({
+              type: 'info',
+              message: `action: ${ action }`
+            });
+          }})
+      }, 
     },
 };
 </script>
