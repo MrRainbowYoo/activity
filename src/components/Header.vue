@@ -1,12 +1,19 @@
 <template>
     <div class="header">
         <h1>⭐活动页面⭐</h1>
+        <div class="header-tip" title="使用说明" @click="openWelcome">🔔</div>
     </div>
 </template>
 
 <script>
-export default {
+import eventBus from '../utils/eventBus'
 
+export default {
+    methods: {
+        openWelcome() {
+            eventBus.$emit('openWelcome')
+        }
+    }
 }
 </script>
 
@@ -26,6 +33,13 @@ export default {
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 9999;
+        z-index: 9;
+        .header-tip {
+            position: absolute;
+            top: 0;
+            right: 1rem;
+            cursor: pointer;
+            user-select: none;
+        }
     }
 </style>

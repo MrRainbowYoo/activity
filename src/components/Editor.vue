@@ -28,6 +28,8 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
 import eventBus from "../utils/eventBus";
 import axios from "axios"
 
+const NEEDCOUNT = 2
+
 export default {
     name: "MonacoEditor",
     components: {},
@@ -72,9 +74,8 @@ export default {
                     label: "Python3",
                 },
                 {
-                    value: "Java",
-                    label: "Java (抱歉,暂不支持)",
-                    disabled: true
+                    value: "java",
+                    label: "Java",
                 },
                 {
                     value: "cpp",
@@ -85,10 +86,12 @@ export default {
                     label: "C",
                 },
             ],
+
             currentLanguage: "JavaScript",
             languageType: "javascript",
             fullscreenLoading: false,
-            questionId: 0
+            questionId: 0,
+            correctCount: 0
         };
     },
     watch: {
@@ -124,7 +127,11 @@ export default {
               console.log('开始提交代码');
               this.submitCodes()
             } else {
-                alert('请提交代码与输出结果')
+                // alert('请提交代码与输出结果')
+                this.$message({
+                  type: 'info',
+                  message: '请提交代码与输出结果'
+                });                  
             }          
         })
     },
@@ -187,10 +194,13 @@ export default {
             console.log(res.data);
             let isPass = res.data.code
             if(isPass) {
-              // alert('恭喜你！回答正确！')
-              this.showResource()
+              this.correctCount = this.correctCount + 1
+              this.correctCount < NEEDCOUNT ? this.gotoNext() : this.showResource()
             } else {
-              alert('抱歉，回答错误。')
+              this.$message({
+                type: 'error',
+                message: '抱歉，回答错误，请再好好思考'
+              });              
             }
           }).catch(reason => {
             console.log(reason)
@@ -207,7 +217,14 @@ export default {
               message: `action: ${ action }`
             });
           }})
-      }, 
+      },
+      gotoNext() {
+        this.$alert('很厉害！那再来一道题吧！', '回答正确', {
+          confirmButtonText: '确定',
+          callback: () => {
+            eventBus.$emit("changeQuestion");
+          }})        
+      }
     },
 };
 </script>
