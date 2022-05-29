@@ -29,6 +29,10 @@ import eventBus from "../utils/eventBus";
 import axios from "axios"
 
 const NEEDCOUNT = 2
+const BASE = "http://47.96.91.10:3003"
+const CONFIG = {
+  timeout: 3000
+}
 
 export default {
     name: "MonacoEditor",
@@ -102,6 +106,7 @@ export default {
               case 'javascript':
               case 'cpp':
               case 'c':
+              case 'java':
                 this.codeValue = '// 把写好的代码粘贴到这里哦'
                 break;
               case 'python':
@@ -124,10 +129,8 @@ export default {
             let codeValue = this.codeCopy;
             let outputValue = this.$refs.output.innerText;
             if (this.isValid(codeValue.trim()) && this.isValid(outputValue.trim())) {
-              console.log('开始提交代码');
               this.submitCodes()
             } else {
-                // alert('请提交代码与输出结果')
                 this.$message({
                   type: 'info',
                   message: '请提交代码与输出结果'
@@ -178,44 +181,42 @@ export default {
                 return true;
         },
         submitCodes() {
-          const URL = 'http://localhost:3003/submit'
+          const URL = BASE + '/submit'
           const BODY = {
             questionId: this.questionId,
             codeContent: this.codeCopy,
             output: this.$refs.output.innerText
           }
-          const CONFIG = {
-            timeout: 3000
+
+          if(this.correctCount < NEEDCOUNT) {
+            this.fullscreenLoading = true;
+            axios.post(URL, BODY, CONFIG).then(res => {
+              console.log(res.data);
+              let isPass = res.data.code
+              if(isPass) {
+                this.correctCount = this.correctCount + 1
+                this.correctCount < NEEDCOUNT ? this.gotoNext() : this.showForm()
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: '抱歉，回答错误，请再好好思考'
+                });              
+              }
+            }).catch(reason => {
+              this.$message({type: 'error', message: reason.message})
+            }).finally(() => {
+              this.fullscreenLoading = false;
+            })
+          } else {
+            this.showForm()
           }
-
-          this.fullscreenLoading = true;
-
-          axios.post(URL, BODY, CONFIG).then(res => {
-            console.log(res.data);
-            let isPass = res.data.code
-            if(isPass) {
-              this.correctCount = this.correctCount + 1
-              this.correctCount < NEEDCOUNT ? this.gotoNext() : this.showResource()
-            } else {
-              this.$message({
-                type: 'error',
-                message: '抱歉，回答错误，请再好好思考'
-              });              
-            }
-          }).catch(reason => {
-            console.log(reason)
-          }).finally(() => {
-            this.fullscreenLoading = false;
-          })
         },
       showResource() {
-        this.$alert('这是资源地址', '回答正确', {
+        this.$alert('这是资源地址', '非常感谢同学的参与', {
           confirmButtonText: '确定',
-          callback: action => {
-            this.$message({
-              type: 'info',
-              message: `action: ${ action }`
-            });
+          callback: () => {
+            localStorage.setItem('done', 1)
+            eventBus.$emit('doneCoding')
           }})
       },
       gotoNext() {
@@ -224,6 +225,37 @@ export default {
           callback: () => {
             eventBus.$emit("changeQuestion");
           }})        
+      },
+      submitComments(value) {
+        let timeStamp = +new Date()
+        let date = new Date().toLocaleString()
+        let content = value
+        let data = { timeStamp, date, content }
+
+        axios.post(BASE + '/comments', data, CONFIG).then(res => {
+          console.log(res);
+        }).catch(e => {
+          console.log(e);
+        })
+        
+      },      
+      showForm() {
+        this.$prompt('这是最后一问，对本次活动形式有什么建议或评价吗？', '回答正确', {
+          confirmButtonText: '提交',
+          cancelButtonText: '取消',
+          inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+          inputErrorMessage: '什么，没有建议或评价吗',
+          closeOnClickModal: false,
+          closeOnPressEscape: false
+        }).then(({ value} ) => {
+          this.showResource()
+          this.submitComments(value)
+        }).catch(e => {
+          this.showResource()
+          this.submitComments(e)
+        }).finally(() => {
+          eventBus.$emit('killBtn')
+        })
       }
     },
 };

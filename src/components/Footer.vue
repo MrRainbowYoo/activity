@@ -1,12 +1,7 @@
 <template>
     <div class="footer">
-        <el-button class="btn" @click="debounceMethods(changeQuestion)">换道题</el-button>
-        <el-button
-            type="primary"
-            class="btn"
-            @click.prevent="submit"
-            v-preventClick
-            >提交</el-button
+        <!-- <el-button class="btn" @click="debounceMethods(changeQuestion)">换道题</el-button> -->
+        <el-button type="primary" class="btn" @click.prevent="submit" v-preventClick v-if="showSubmitBtn">提交</el-button
         >
     </div>
 </template>
@@ -17,7 +12,8 @@ import eventBus from "../utils/eventBus.js";
 export default {
     data() {
         return {
-            debounceTimer: null
+            debounceTimer: null,
+            showSubmitBtn: true
         };
     },
     methods: {
@@ -37,6 +33,11 @@ export default {
             if (callNow) func.apply(context, args);
         },
     },
+    created() {
+        eventBus.$on('killBtn', () => {
+            this.showSubmitBtn = false
+        })
+    }
 };
 </script>
 
@@ -52,7 +53,7 @@ export default {
     justify-content: center;
 
     .btn {
-        padding: 10px 15px;
+        padding: 0.6rem 2rem;
     }
 }
 </style>

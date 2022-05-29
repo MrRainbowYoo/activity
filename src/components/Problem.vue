@@ -18,7 +18,7 @@
         <div class="problem-input">
             <p class="bold">输入用例</p>
             <p class="tip">
-                注：用户可在本地IDE编写代码，提交的时候，将下方测试输入用例的『输出与代码』分别填充至右侧。
+                注：用户可在本地IDE编写代码，提交的时候，将下方输入用例的『代码与输出结果』分别填充至右侧。
                 输出结果记得换行。
             </p>
 
@@ -36,7 +36,7 @@ export default {
     data() {
         return {
             questionSet: require("../questionSet.json").questions,
-            questionId: 0,
+            questionId: 2,
             title: null,
             desc: null,
             demo: null, 

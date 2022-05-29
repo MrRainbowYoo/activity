@@ -1,7 +1,10 @@
 <template>
     <div class="header">
         <h1>⭐活动页面⭐</h1>
-        <div class="header-tip" title="使用说明" @click="openWelcome">🔔</div>
+        <div class="header-btns">
+            <div class="header-resouce" title="资源地址" @click="openResource" v-if="doneCoding">🎁</div>
+            <div class="header-tip" title="使用说明" @click="openWelcome">🔔</div>
+        </div>
     </div>
 </template>
 
@@ -9,9 +12,31 @@
 import eventBus from '../utils/eventBus'
 
 export default {
+    data() {
+        return {
+            doneCoding: false
+        }
+    },
+    created() {
+        let val = localStorage.getItem('done')
+        if(val) {
+            this.doneCoding = true
+        }
+
+        eventBus.$on('doneCoding', () => {
+            this.doneCoding = true
+        })
+    },
     methods: {
         openWelcome() {
             eventBus.$emit('openWelcome')
+        },
+        openResource() {
+            this.$alert('这是资源地址', '非常感谢同学的参与', {
+            confirmButtonText: '确定',
+            callback: () => {
+                localStorage.setItem('done', 1)
+            }})            
         }
     }
 }
@@ -34,12 +59,23 @@ export default {
         left: 0;
         width: 100%;
         z-index: 9;
-        .header-tip {
+
+        &-btns {
             position: absolute;
+            // width: 200px;
             top: 0;
-            right: 1rem;
-            cursor: pointer;
-            user-select: none;
-        }
+            right: 0;
+            display: flex;
+            font-size: 1.2rem;
+
+            .header-tip {
+                margin: 0 1rem;
+                cursor: pointer;
+            }
+
+            .header-resouce {
+                cursor: pointer;
+            }
+        }       
     }
 </style>

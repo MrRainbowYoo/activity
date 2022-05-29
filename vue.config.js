@@ -11,7 +11,7 @@ module.exports = {
 
     config.plugin('html')
     .tap(args => {
-      args[0].title = "你好同学";
+      args[0].title = "感恩季 | 代码闯关";
       return args;
     })
   },

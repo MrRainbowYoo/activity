@@ -10,6 +10,8 @@ Vue.config.productionTip = false
 
 Vue.use(Directives)
 
+console.log = function() {}
+
 new Vue({
   render: h => h(App),
 }).$mount('#app')
