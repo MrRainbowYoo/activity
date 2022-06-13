@@ -8,11 +8,14 @@
             <p class="bold">示例 {{item.id+1}}:</p>
             <div class="demo-content">
                 <p>
-                    <span class="bold">输入：</span><code>{{item.input}}</code>
+                    <span class="bold">输入：</span><code>{{item.input.replaceAll("'", '"')}}</code>
                 </p>
                 <p>
                     <span class="bold">输出：</span><code>{{item.output}}</code>
-                </p>                
+                </p>
+                <p v-if="item.explain">
+                    <span class="bold">解释：</span><pre style="margin-top:5px">{{item.explain}}</pre>
+                </p>                             
             </div>
         </div>
         <div class="problem-input">
@@ -23,7 +26,7 @@
             </p>
 
             <div class="input-content">
-                <code v-for="(item, index) in inputContent" :key="index">{{item}}</code>
+                <code v-for="(item, index) in inputContent" :key="index">{{item.replaceAll("'", '"')}}</code>
             </div>
         </div>
     </div>
@@ -36,7 +39,7 @@ export default {
     data() {
         return {
             questionSet: require("../questionSet.json").questions,
-            questionId: 2,
+            questionId: 0,
             title: null,
             desc: null,
             demo: null, 
@@ -75,6 +78,7 @@ export default {
     @fontSize: 13px;
     @gap: 10px;
     @border: 1px solid rgb(240, 240, 240);
+    
 
     .problem-wrap {
         font-size: @fontSize;
@@ -83,6 +87,15 @@ export default {
         border: @border;
         display: flex;
         flex-direction: column;
+
+
+        background-color: rgba(255, 255, 255, .7);
+        // background: url('../assets/bg.png') no-repeat 50%;
+        // background-size: cover;
+
+        code {
+            font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+        }
 
         .bold {
             font-weight: bold;
@@ -139,7 +152,7 @@ export default {
 
                 code {
                     display: block;
-                    margin-bottom: 5px;
+                    margin-bottom: 10px;
                 }
             }
         }

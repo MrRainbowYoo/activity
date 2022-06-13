@@ -29,6 +29,7 @@ import eventBus from "../utils/eventBus";
 import axios from "axios"
 
 const NEEDCOUNT = 2
+// const BASE = "http://localhost:3003"
 const BASE = "http://47.96.91.10:3003"
 const CONFIG = {
   timeout: 3000
@@ -195,6 +196,7 @@ export default {
               let isPass = res.data.code
               if(isPass) {
                 this.correctCount = this.correctCount + 1
+                this.questionId = this.questionId + 1
                 this.correctCount < NEEDCOUNT ? this.gotoNext() : this.showForm()
               } else {
                 this.$message({
@@ -212,11 +214,15 @@ export default {
           }
         },
       showResource() {
-        this.$alert('这是资源地址', '非常感谢同学的参与', {
+        const that = this
+        this.$alert('点击确定即可跳转哦', '非常感谢同学的参与', {
           confirmButtonText: '确定',
           callback: () => {
             localStorage.setItem('done', 1)
             eventBus.$emit('doneCoding')
+            that.$router.push({
+              path: '/thanks'
+            })
           }})
       },
       gotoNext() {
@@ -264,11 +270,11 @@ export default {
 <style lang="less">
 @border: 1px solid rgb(240, 240, 240);
 
-
 #monaco-editor-box {
     border: @border;
     display: flex;
     flex-direction: column;
+    background-color: #fff;
 
     .bold {
       font-weight: bold;

@@ -8,6 +8,7 @@
                 <li>左侧部分为题目区，包含题目描述、输入示例、以及输入用例。</li>
                 <li>右侧部分为编码区，包含代码编辑器，输出结果。</li>
                 <li><strong>注：</strong>同学可以使用自己的 IDE 编写代码，提交的时候，把代码复制到编辑器区域。左侧提供了一些输入用例，同学需要将这些数据作为代码的输入，将对应的输出复制到输出结果区域，每个输出结果应 <strong>换行</strong>。</li>
+                <li style="color:red;">我不管你用什么语言，对应输出结果对了就OK！</li>
             </ul>
             <el-button type="primary" class="welcome-box-btn" @click="closeWelcome">好的</el-button>
         </div>

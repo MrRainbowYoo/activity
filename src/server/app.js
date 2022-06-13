@@ -4,7 +4,8 @@ const app = express()
 const $sql = require('./db')
 
 const corsOptions = {
-    origin: '*',
+    origin: 'http://47.96.91.10',
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     optionSuccessStatus: 200
 }
 

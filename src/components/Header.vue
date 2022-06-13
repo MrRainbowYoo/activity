@@ -1,6 +1,6 @@
 <template>
     <div class="header">
-        <h1>⭐活动页面⭐</h1>
+        <div class="header-title">{{title}}</div>
         <div class="header-btns">
             <div class="header-resouce" title="资源地址" @click="openResource" v-if="doneCoding">🎁</div>
             <div class="header-tip" title="使用说明" @click="openWelcome">🔔</div>
@@ -14,7 +14,13 @@ import eventBus from '../utils/eventBus'
 export default {
     data() {
         return {
-            doneCoding: false
+            doneCoding: false,
+        }
+    },
+    props: {
+        title: {
+            type: String,
+            default: '信息科学与技术学院毕业感恩季活动'
         }
     },
     created() {
@@ -32,10 +38,14 @@ export default {
             eventBus.$emit('openWelcome')
         },
         openResource() {
-            this.$alert('这是资源地址', '非常感谢同学的参与', {
+            const that = this
+            this.$alert('点击确定即可跳转哦', '非常感谢同学的参与', {
             confirmButtonText: '确定',
             callback: () => {
                 localStorage.setItem('done', 1)
+                that.$router.push({
+                path: '/thanks'
+                })
             }})            
         }
     }
@@ -43,12 +53,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
-    @bgColor: #2980b9;
+    @bgColor: rgb(96, 160, 208);
     @fontColor: #fefefe;
 
     .header {
         background-color: @bgColor;
         color: @fontColor;
+        font-family: STXinwei;
         height: 70px;
         line-height: 70px;
         box-shadow: 0 2px 5px 5px rgba(92, 90, 90, 0.1);
@@ -59,6 +70,10 @@ export default {
         left: 0;
         width: 100%;
         z-index: 9;
+
+        &-title {
+            font-size: 1.8rem;
+        }
 
         &-btns {
             position: absolute;
@@ -77,5 +92,16 @@ export default {
                 cursor: pointer;
             }
         }       
+    }
+
+    @media (max-width: 960px) {
+        .header-title {
+            font-size: 100%;
+        }
+
+        .header-resouce{
+            position: fixed;
+            left: 10px;
+        }
     }
 </style>

@@ -1,22 +1,23 @@
 <template>
     <div id="app">
-        <Header />
-        <Main />
-        <Footer />
+        <!-- <Header /> -->
+        <router-view></router-view>
+        <!-- <Main /> -->
+        <!-- <Footer /> -->
     </div>
 </template>
 
 <script>
-import Main from "./components/Main.vue";
-import Header from "./components/Header.vue";
-import Footer from "./components/Footer.vue";
+// import Main from "./components/Main.vue";
+// import Header from "./components/Header.vue";
+// import Footer from "./components/Footer.vue";
 
 export default {
     name: "App",
     components: {
-        Main,
-        Header,
-        Footer,
+        // Main,
+        // Header,
+        // Footer,
     },
 };
 </script>
@@ -41,5 +42,8 @@ ul {
     display: flex;
     flex-direction: column;
     /* min-width: 1314px; */
+
+    /* background: url('./assets/bg.png') no-repeat 50%;
+    background-size: cover; */
 }
 </style>
